@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Edit Product{% endblock %}
+{% block title %}Add Product{% endblock %}
 
 {% block head %}
     <script src="https://cdn.ckeditor.com/4.22.0/standard/ckeditor.js"></script>
@@ -15,25 +15,25 @@
 
 {% block content %}
 <div class="container">
-    <h1 class="my-4">Edit Product</h1>
-    <form action="{{ url_for('product.edit_product', product_id=product.id) }}" method="POST" enctype="multipart/form-data">
+    <h1>Add New Product</h1>
+    <form action="{{ url_for('product.add_product') }}" method="POST" enctype="multipart/form-data">    
         {{ form.hidden_tag() }}
 
-        <div class="mb-3">
-            {{ form.bgg_url.label(class="form-label") }}
-            {% if not product.bgg_url %}
+        <div class="mb-3 d-flex align-items-center">
+            <div class="flex-grow-1">
+                {{ form.bgg_url.label(class="form-label") }}
                 {{ form.bgg_url(class="form-control") }}
-                <small class="form-text text-muted">You can add the BGG URL now.</small>
-            {% else %}
-                {{ form.bgg_url(class="form-control", readonly=True) }}
-                <small class="form-text text-muted">Can't be edited.</small>
-            {% endif %}
+                <small class="form-text text-muted">
+                    Enter the <a href="https://boardgamegeek.com">BoardGameGeek</a> URL and have the name, description, and player count autofilled!
+                </small>
+            </div>
+            <div class="ms-3">
+                <button type="button" id="autofillBtn" class="btn btn-info" style="height: 100%;">Autofill</button>
+            </div>
         </div>
-
         <div class="mb-3">
             {{ form.name.label(class="form-label") }}
-            {{ form.name(class="form-control", readonly=True) }}
-            <small class="form-text text-muted">Can't be edited.</small>
+            {{ form.name(class="form-control") }}
         </div>
         <div class="mb-3">
             {{ form.description.label(class="form-label") }}
@@ -64,34 +64,21 @@
         </div>
         <div class="mb-3">
             {{ form.tags.label(class="form-label") }}
-            <input name="tags" class="form-control" value="{% for tag in product.tags %}{{ tag.name }}, {% endfor %}">
+            {{ form.tags(class="form-control") }}
             <small class="form-text text-muted">Tip: Type to search!</small>
         </div>
         <div class="mb-3">
             {{ form.main_image.label(class="form-label") }}
-            {% if product.main_image %}
-                <div id="mainImagePreview">
-                    <img src="{{ url_for('static', filename='uploads/' + product.main_image) }}" alt="Current Main Image" style="max-width: 200px;">
-                </div>
-                <small class="form-text text-muted">If you add a new image, the current one will be replaced!</small>
-            {% endif %}
-            {{ form.main_image(class="form-control", id="mainImageInput", required=false) }}
+            {{ form.main_image(class="form-control", id="mainImageInput") }}
+            <div id="mainImagePreview" class="image-preview"></div>
         </div>
-
         <div class="mb-3">
             {{ form.images.label(class="form-label") }}
             {{ form.images(class="form-control", id="additionalImagesInput", multiple=True) }}
-            <div id="imagePreviewContainer" class="image-preview">
-                {% for image in product.images.split(',') %}
-                    <div class="image-preview">
-                        <img src="{{ url_for('static', filename='uploads/' ~ image) }}" alt="Image Preview" style="max-width: 200px;">
-                    </div>
-                {% endfor %}
-            </div>
-            <small class="form-text text-muted">If you add new images, all existing ones will be replaced!</small>
+            <div id="imagePreviewContainer" class="image-preview"></div>
         </div>
         {{ form.submit(class="btn btn-primary") }}
-        <a href="{{ url_for('profile.user_profile') }}" class="btn btn-secondary">Back to Profile</a>
+        <a href="{{ url_for('main.shop') }}" class="btn btn-secondary">Back to Product List</a>
     </form>
 </div>
 {% endblock %}
@@ -99,6 +86,7 @@
 {% block scripts %}
     <script>
         const whitelist_tags = [{% for tag in tags %}'{{ tag.name }}',{% endfor %}];
+        const autofill_url = "{{ url_for('product.autofill_bgg_info') }}";
     </script>
     <script src="{{ url_for('static', filename='js/imagePreview.js') }}"></script>
     <script src="{{ url_for('static', filename='js/productForm.js') }}"></script>

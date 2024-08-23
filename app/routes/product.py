@@ -63,7 +63,7 @@ def add_product():
         flash(Markup(f'Product added successfully! <a href="{url_for("product.product_detail", product_id=new_product.id, slug=new_product.slug)}" class="alert-link">View Product</a>'), 'success')
         return redirect(url_for('main.shop'))
 
-    return render_template('add_product.html', form=form, tags=Tag.query.all())
+    return render_template('product/add_product.html', form=form, tags=Tag.query.all())
 
 @product.route('/product/<slug>-<int:product_id>')
 def product_detail(slug, product_id):
@@ -72,7 +72,7 @@ def product_detail(slug, product_id):
     if product.slug != slug:
         return redirect(url_for('product.product_detail', slug=product.slug, product_id=product.id))
 
-    return render_template('product.html', product=product)
+    return render_template('product/product.html', product=product)
 
 @product.route('/edit_product/<int:product_id>', methods=['GET', 'POST'])
 @login_required
@@ -135,7 +135,7 @@ def edit_product(product_id):
         else:
             return redirect(url_for('main.shop'))
 
-    return render_template('edit_product.html', form=form, product=product, tags=Tag.query.all())
+    return render_template('product/edit_product.html', form=form, product=product, tags=Tag.query.all())
 
 
 @product.route('/delete_product/<int:product_id>', methods=['POST'])

@@ -19,7 +19,7 @@ def view_cart():
             })
             total_price += product.price * quantity
 
-    return render_template('cart.html', products=products, total_price=total_price)
+    return render_template('flow/cart.html', products=products, total_price=total_price)
 
 @cart.route('/add_to_cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):

@@ -1,33 +1,114 @@
-<header class="bg-dark text-white p-3">
-    <div class="container d-flex justify-content-between align-items-center">
-        <h1><a href="{{ url_for('main.index') }}" class="text-white text-decoration-none">My Store</a></h1>
-        <nav class="d-flex align-items-center">
-            <div class="me-3">
-                {% if total_quantity > 0 %}
-                    <a href="{{ url_for('cart.view_cart') }}" class="text-white text-decoration-none">
-                        Cart: {{ total_quantity }} items - EUR {{ "%.2f"|format(total_price) }}
+<header id="header" class="site-header header-scrolled position-fixed text-black bg-light">
+    <nav id="header-nav" class="navbar navbar-expand-lg px-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <img src="{{ url_for('static', filename='images/main-logo.png') }}" class="logo">
+            </a>
+            <button class="navbar-toggler d-flex d-lg-none order-3 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <svg class="navbar-icon">
+                    <use xlink:href="#navbar-icon"></use>
+                </svg>
+            </button>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="bdNavbar" aria-labelledby="bdNavbarOffcanvasLabel">
+                <div class="offcanvas-header px-4 pb-0">
+                    <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                        <img src="{{ url_for('static', filename='images/main-logo.png') }}" class="logo">
                     </a>
-                {% else %}
-                    <span class="text-white">Your cart is empty!</span>
-                {% endif %}
-            </div>
-            {% if current_user.is_authenticated %}
-                <div class="me-3">
-                    <a href="{{ url_for('chat.chats') }}" class="text-white text-decoration-none">
-                        Messages
-                        {% if unread_count > 0 %}
-                        <span class="badge bg-danger">{{ unread_count }}</span>
-                        {% endif %}
-                    </a>
+                    <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#bdNavbar"></button>
                 </div>
-                <span>Welcome, {{ current_user.username }}</span>
-                <a href="{{ url_for('profile.user_profile') }}" class="btn btn-info ms-2">Profile</a>
-                <a href="{{ url_for('product.add_product') }}" class="btn btn-success ms-2">Add Product</a>
-                <a href="{{ url_for('auth.logout') }}" class="btn btn-danger ms-2">Logout</a>
-            {% else %}
-                <a href="{{ url_for('auth.login') }}" class="btn btn-light ms-2">Login</a>
-                <a href="{{ url_for('auth.register') }}" class="btn btn-light ms-2">Register</a>
-            {% endif %}
-        </nav>
-    </div>
+                <div class="offcanvas-body">
+                    <ul id="navbar" class="navbar-nav text-uppercase justify-content-end align-items-center flex-grow-1 pe-3">
+                        <!-- Desktop Menu -->
+                        <li class="nav-item d-none d-lg-block">
+                            <a class="nav-link me-4 active" href="{{ url_for('main.index') }}">Home</a>
+                        </li>
+                        <li class="nav-item d-none d-lg-block">
+                            <a class="nav-link me-4" href="{{ url_for('main.shop') }}">Shop</a>
+                        </li>
+                        {% if current_user.is_authenticated %}
+                        <li class="nav-item d-none d-lg-block">
+                            <a class="nav-link me-4" href="{{ url_for('profile.user_profile') }}">Profile</a>
+                        </li>
+                        <li class="nav-item d-none d-lg-block">
+                            <a class="nav-link me-4" href="{{ url_for('auth.logout') }}">Log Out</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item d-none d-lg-block">
+                            <a class="nav-link me-4" href="{{ url_for('auth.login') }}">Login</a>
+                        </li>
+                        <li class="nav-item d-none d-lg-block">
+                            <a class="nav-link me-4" href="{{ url_for('auth.register') }}">Register</a>
+                        </li>
+                        {% endif %}
+
+                        <!-- Mobile Menu -->
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link me-4" href="{{ url_for('main.index') }}">Home</a>
+                        </li>
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link me-4" href="{{ url_for('main.shop') }}">Shop</a>
+                        </li>
+                        {% if current_user.is_authenticated %}
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link me-4" href="{{ url_for('profile.user_profile') }}">Profile</a>
+                        </li>
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link me-4" href="{{ url_for('chat.chats') }}">Messages</a>
+                        </li>
+                        <li class="nav-item d-lg-none">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link me-4" href="{{ url_for('auth.logout') }}">Log Out</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link me-4" href="{{ url_for('auth.login') }}">Login</a>
+                        </li>
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link me-4" href="{{ url_for('auth.register') }}">Register</a>
+                        </li>
+                        {% endif %}
+
+                        <!-- Icons -->
+                        <li class="nav-item">
+                            <div class="user-items ps-5">
+                                <ul class="d-flex justify-content-end list-unstyled">
+                                    <li class="search-item pe-3">
+                                        <a href="#" class="search-button">
+                                          <svg class="search">
+                                            <use xlink:href="#search"></use>
+                                          </svg>
+                                        </a>
+                                      </li>
+                                    {% if current_user.is_authenticated %}
+                                    <li class="pe-3">
+                                        <a href="{{ url_for('chat.chats') }}" class="position-relative">
+                                            <svg class="messages">
+                                                <use xlink:href="#messages"></use>
+                                            </svg>
+                                            {% if unread_count > 0 %}
+                                                <span class="badge bg-warning text-dark">{{ unread_count }}</span>
+                                            {% endif %}
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                    <li>
+                                        <a href="{{ url_for('cart.view_cart') }}">
+                                            <svg class="cart">
+                                                <use xlink:href="#cart"></use>
+                                            </svg>
+                                            {% if total_quantity > 0 %}
+                                                <span class="badge bg-warning text-dark">{{ total_quantity }}</span>
+                                            {% endif %}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
 </header>

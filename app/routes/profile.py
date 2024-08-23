@@ -32,4 +32,4 @@ def user_profile():
     orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.order_date.desc()).all()
     products = Product.query.filter_by(owner_id=current_user.id).order_by(Product.date_added.desc()).all()
 
-    return render_template('profile.html', update_form=update_form, password_form=password_form, orders=orders, products=products)
+    return render_template('pages/profile.html', update_form=update_form, password_form=password_form, orders=orders, products=products)

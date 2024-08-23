@@ -26,7 +26,7 @@ def register():
         flash('Registration successful. Please log in.', 'success')
         return redirect(url_for('auth.login'))
 
-    return render_template('register.html', form=form)
+    return render_template('auth/register.html', form=form)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -41,7 +41,7 @@ def login():
         else:
             flash('Invalid username or password.', 'danger')
 
-    return render_template('login.html', form=form)
+    return render_template('auth/login.html', form=form)
 
 @auth.route('/logout')
 @login_required

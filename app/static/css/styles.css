@@ -1021,6 +1021,8 @@ CSS STRUCTURE:
   }
   
 
+/* Spelejam */
+
 .image-preview {
     display: inline-block;
     margin: 10px;
@@ -1036,3 +1038,33 @@ CSS STRUCTURE:
 .cke_notification_warning {
     display: none;
 }
+
+.alert-messages {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1050;
+  width: 300px;
+}
+
+.alert {
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  opacity: 0.9;
+  position: relative;
+  padding-right: 2.5rem;
+}
+
+.alert-dismissible .btn-close {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+}
+
+.main-content {
+  padding-top:8rem;
+  min-height: 60vh;
+}
+
+

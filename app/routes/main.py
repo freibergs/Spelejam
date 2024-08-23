@@ -55,15 +55,15 @@ def shop():
     products = query.paginate(page=page, per_page=9)
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        product_list_html = render_template('_product_list.html', products=products)
-        pagination_html = render_template('_pagination.html', products=products)
+        product_list_html = render_template('partials/_product_list.html', products=products)
+        pagination_html = render_template('partials/_pagination.html', products=products)
         return {'product_list': product_list_html, 'pagination': pagination_html, 'total_count': total_count}
 
     categories = Category.query.all()
     tags = Tag.query.all()
-    return render_template('shop.html', products=products, categories=categories, tags=tags, total_count=total_count)
+    return render_template('pages/shop.html', products=products, categories=categories, tags=tags, total_count=total_count)
 
 @main.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('pages/index/index_main.html')
 

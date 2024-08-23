@@ -97,7 +97,7 @@ def checkout():
         return redirect(checkout_session.url)
 
     return render_template(
-        'checkout.html', 
+        'flow/checkout.html', 
         form=form, 
         products=products, 
         shipping_cost=shipping_cost, 
@@ -142,10 +142,10 @@ def order_details(order_id):
 
     if current_user.is_authenticated:
         if current_user.id == order.user_id or current_user.user_level > 2:
-            return render_template('order_details.html', order=order)
+            return render_template('flow/order_details.html', order=order)
 
     if 'order_id' in session and session['order_id'] == order_id:
-        return render_template('order_details.html', order=order)
+        return render_template('flow/order_details.html', order=order)
 
     form = PhoneVerificationForm()
 
@@ -156,4 +156,4 @@ def order_details(order_id):
         else:
             flash('Incorrect phone number.', 'danger')
 
-    return render_template('order_verification.html', form=form)
+    return render_template('utils/order_verification.html', form=form)
