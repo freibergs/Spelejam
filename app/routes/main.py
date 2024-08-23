@@ -5,8 +5,8 @@ from sqlalchemy.orm import joinedload
 
 main = Blueprint('main', __name__)
 
-@main.route('/')
-def index():
+@main.route('/shop')
+def shop():
     page = request.args.get('page', 1, type=int)
     category_id = request.args.get('category', None, type=int)
     tags = request.args.get('tags', None)
@@ -61,4 +61,9 @@ def index():
 
     categories = Category.query.all()
     tags = Tag.query.all()
-    return render_template('index.html', products=products, categories=categories, tags=tags, total_count=total_count)
+    return render_template('shop.html', products=products, categories=categories, tags=tags, total_count=total_count)
+
+@main.route('/')
+def index():
+    return render_template('index.html')
+

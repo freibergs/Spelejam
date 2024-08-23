@@ -45,11 +45,11 @@
             </tr>
         </tfoot>
     </table>
-    <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Continue Shopping</a>
+    <a href="{{ url_for('main.shop') }}" class="btn btn-secondary">Continue Shopping</a>
     <a href="{{ url_for('order.checkout') }}" class="btn btn-primary">Proceed to Checkout</a>
     {% else %}
     <p>Your cart is empty.</p>
-    <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Start Shopping</a>
+    <a href="{{ url_for('main.shop') }}" class="btn btn-secondary">Start Shopping</a>
     {% endif %}
 </div>
 {% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h1 class="card-title text-success">Thank you for your order, {{ order.customer_name }}!</h1>
+            <p class="card-text">Your order ID is: <strong>#{{ order.id }}</strong></p>
+            <p class="card-text">Total Amount: <strong>€{{ "%.2f"|format(order.total_price) }}</strong></p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h2 class="card-title">Order Details</h2>
+            <ul class="list-group list-group-flush">
+                {% for item in order.products | fromjson %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ item.quantity }} x {{ item.name }}</span>
+                    <span class="badge bg-primary rounded-pill">€{{ "%.2f"|format(item.total) }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h3 class="card-title">Shipping Information</h3>
+            {% if order.shipping_method == 'omniva' %}
+                <p><strong>Delivery Method:</strong> Omniva Pickup Point</p>
+                <p><strong>Pickup Point:</strong> {{ order.omniva_pickup_point }}</p>
+                {% if order.omniva_tracking_code %}
+                    <a href="https://manaold.omniva.lv/track/{{ order.omniva_tracking_code }}" target="_blank" class="btn btn-primary mt-2">Track Your Order</a>
+                {% endif %}
+            {% elif order.shipping_method == 'self_pickup' %}
+                <p><strong>Delivery Method:</strong> Self Pickup</p>
+                <p>Please come to our store to pick up your order.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <p>We will notify you via email at <strong>{{ order.customer_email }}</strong> for any updates.</p>
+            <a href="{{ url_for('main.shop') }}" class="btn btn-success mt-3">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

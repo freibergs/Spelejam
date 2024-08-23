@@ -8,7 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 from slugify import slugify
 from markupsafe import Markup
-from ..forms import AddProductForm
+from ..forms import AddProductForm, EditProductForm
 
 product = Blueprint('product', __name__)
 
@@ -61,7 +61,7 @@ def add_product():
         db.session.commit()
 
         flash(Markup(f'Product added successfully! <a href="{url_for("product.product_detail", product_id=new_product.id, slug=new_product.slug)}" class="alert-link">View Product</a>'), 'success')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.shop'))
 
     return render_template('add_product.html', form=form, tags=Tag.query.all())
 
@@ -73,6 +73,88 @@ def product_detail(slug, product_id):
         return redirect(url_for('product.product_detail', slug=product.slug, product_id=product.id))
 
     return render_template('product.html', product=product)
+
+@product.route('/edit_product/<int:product_id>', methods=['GET', 'POST'])
+@login_required
+def edit_product(product_id):
+    product = Product.query.get_or_404(product_id)
+
+    if product.owner_id != current_user.id and current_user.user_level <= 2:
+        flash('You do not have permission to edit this product.', 'danger')
+        return redirect(url_for('main.index'))
+
+    form = EditProductForm(obj=product)
+
+    form.players.data = json.dumps([{'value': player} for player in product.players.split(',')])
+    form.tags.data = json.dumps([{'value': tag.name} for tag in product.tags])
+
+    if not product.bgg_url:
+        form.bgg_url.render_kw = {'readonly': False}
+    else:
+        form.bgg_url.render_kw = {'readonly': True}
+
+    if form.validate_on_submit():
+        product.description = form.description.data
+        product.price = form.price.data
+        product.condition = form.condition.data
+        product.missing_parts = form.missing_parts.data
+        product.category_id = form.category.data
+
+        if not product.bgg_url:
+            product.bgg_url = form.bgg_url.data
+
+        players_json = form.players.data
+        try:
+            players_data = json.loads(players_json)
+            players = [player['value'] for player in players_data]
+            product.players = ','.join(players)
+        except json.JSONDecodeError:
+            flash('There was an error processing the number of players.', 'danger')
+            return redirect(url_for('product.edit_product', product_id=product.id))
+
+        tag_names = [tag['value'] for tag in json.loads(form.tags.data)]
+        tags = Tag.query.filter(Tag.name.in_(tag_names)).all()
+        product.tags = tags
+
+        if form.main_image.data:
+            product.main_image = save_image(form.main_image.data)
+
+        uploaded_files = request.files.getlist('images')
+        if uploaded_files and any(file.filename for file in uploaded_files):
+            image_filenames = [save_image(file) for file in uploaded_files if file]
+            product.images = ','.join(image_filenames)
+
+        db.session.commit()
+
+        flash(Markup(f'Product updated! <a href="{url_for("product.product_detail", product_id=product.id, slug=product.slug)}" class="alert-link">View Product</a>'), 'success')
+
+        # Determine where to redirect after updating
+        next_page = request.form.get('next')
+        if next_page:
+            return redirect(next_page + '#products')
+        else:
+            return redirect(url_for('main.shop'))
+
+    return render_template('edit_product.html', form=form, product=product, tags=Tag.query.all())
+
+
+@product.route('/delete_product/<int:product_id>', methods=['POST'])
+@login_required
+def delete_product(product_id):
+    next_page = request.form.get('next')
+    product = Product.query.get_or_404(product_id)
+
+    if product.owner_id != current_user.id and current_user.user_level <= 2:
+        flash('You do not have permission to delete this product.', 'danger')
+    else:
+        db.session.delete(product)
+        db.session.commit()
+        flash('Product deleted successfully.', 'success')
+
+    if next_page:
+        return redirect(next_page)
+    else:
+        return redirect(url_for('main.index'))
 
 @product.route('/autofill_bgg_info', methods=['POST'])
 @login_required

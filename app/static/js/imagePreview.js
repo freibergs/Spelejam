@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.onload = function(e) {
                     const preview = document.getElementById('mainImagePreview');
                     if (preview) {
-                        preview.innerHTML = `<img src="${e.target.result}" alt="Main Image Preview">`;
+                        preview.innerHTML = `<img src="${e.target.result}" alt="Main Image Preview" style="max-width: 200px;">`;
                     }
                 };
                 reader.readAsDataURL(file);
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     reader.onload = function(e) {
                         const preview = document.createElement('div');
                         preview.className = 'image-preview';
-                        preview.innerHTML = `<img src="${e.target.result}" alt="Image Preview">`;
+                        preview.innerHTML = `<img src="${e.target.result}" alt="Image Preview" style="max-width: 200px;">`;
                         previewContainer.appendChild(preview);
                     };
                     reader.readAsDataURL(file);

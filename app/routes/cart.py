@@ -30,7 +30,7 @@ def add_to_cart(product_id):
     product = Product.query.get(product_id)
     if not product:
         flash('Product not found.', 'danger')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.shop'))
 
     current_quantity = cart_items.get(product_id_str, 0)
     if current_quantity + 1 > product.stock:

@@ -54,11 +54,30 @@
                 {% else %}
                     <h5>Seller Information</h5>
                     <p><strong>Seller:</strong> {{ product.owner.username }}</p>
-                    <p><strong>Location:</strong> {{ product.owner.location }}</p>
+                    <p><strong>Location:</strong> 
+                        {% if product.owner.location %}
+                            {{ product.owner.location }}
+                        {% else %}
+                            Not specified
+                        {% endif %}
+                    </p>                    
                     <a href="{{ url_for('chat.start_chat', product_id=product.id, user_id=product.owner_id) }}" class="btn btn-primary">Contact Seller</a>
                 {% endif %}
             {% else %}
                 <p class="text-warning">You cannot buy or contact yourself regarding this product.</p>
+            {% endif %}
+
+            <!-- Edit and Delete buttons -->
+            {% if current_user.id == product.owner.id or current_user.user_level > 2 %}
+            <hr>
+            <form action="{{ url_for('product.edit_product', product_id=product.id) }}" method="GET" style="display:inline;">
+                <input type="hidden" name="next" value="{{ request.url }}">
+                <button type="submit" class="btn btn-warning">Edit</button>
+            </form>
+            <form action="{{ url_for('product.delete_product', product_id=product.id) }}" method="POST" style="display:inline;">
+                <input type="hidden" name="next" value="{{ url_for('main.shop') }}">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
+            </form>
             {% endif %}
         </div>
     </div>

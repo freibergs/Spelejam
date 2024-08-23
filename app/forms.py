@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, EmailField, TelField, SelectField, RadioField, TextAreaField, DecimalField, IntegerField, FileField
-from wtforms.validators import InputRequired, Length, ValidationError, Email, NumberRange
+from wtforms.validators import InputRequired, Length, ValidationError, Email, EqualTo, NumberRange
 from wtforms.widgets import HiddenInput
 from .models import User, Category
 from instance.parcelmachines import OMNIVA_LOCATIONS
@@ -29,7 +29,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class AddProductForm(FlaskForm):
-    bgg_url = StringField('BoardGameGeek URL', validators=[InputRequired(), Length(max=255)])
+    bgg_url = StringField('BoardGameGeek URL', validators=[Length(max=255)])  # Optional now
     name = StringField('Name', validators=[InputRequired(), Length(max=120)])
     description = TextAreaField('Description', validators=[InputRequired()])
     price = DecimalField('Price', validators=[InputRequired(), NumberRange(min=0)], places=2)
@@ -46,6 +46,18 @@ class AddProductForm(FlaskForm):
         super(AddProductForm, self).__init__(*args, **kwargs)
         self.category.choices = [(category.id, category.name) for category in Category.query.all()]
 
+class EditProductForm(AddProductForm):
+    def __init__(self, product=None, *args, **kwargs):
+        super(EditProductForm, self).__init__(*args, **kwargs)
+        self.name.render_kw = {'readonly': True}  # Disable the name field
+        self.main_image.validators = []  # Remove the 'InputRequired' validator
+        self.main_image.render_kw = {'required': False}  # Ensure the 'required' attribute is removed in HTML
+        self.submit.label.text = 'Edit Product'   # Change the submit button label
+        
+        # Only make bgg_url editable if it's not already set
+        if product and product.bgg_url:
+            self.bgg_url.render_kw = {'readonly': True}  # Disable editing of bgg_url if it's already set
+
 class OrderForm(FlaskForm):
     customer_name = StringField('Name', validators=[InputRequired(), Length(max=120)])
     customer_email = EmailField('Email', validators=[InputRequired(), Email(), Length(max=120)])
@@ -59,3 +71,14 @@ class OrderForm(FlaskForm):
 class PhoneVerificationForm(FlaskForm):
     phone_number = StringField('Phone Number', validators=[InputRequired(), Length(min=8, max=15)])
     submit = SubmitField('Verify')
+
+class UpdateProfileForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(max=80)])
+    location = StringField('Location', validators=[Length(max=120)])
+    submit = SubmitField('Update Profile')
+
+class ChangePasswordForm(FlaskForm):
+    current_password = PasswordField('Current Password', validators=[InputRequired()])
+    new_password = PasswordField('New Password', validators=[InputRequired(), Length(min=4, max=20)])
+    confirm_new_password = PasswordField('Confirm New Password', validators=[InputRequired(), EqualTo('new_password')])
+    submit = SubmitField('Change Password')

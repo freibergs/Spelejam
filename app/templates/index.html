@@ -1,104 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Product Store{% endblock %}
+{% block title %}Welcome{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1 class="my-4">Product Store</h1>
-
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <h5>Filter by Category</h5>
-            <select id="categoryFilter" class="form-select">
-                <option value="">All Categories</option>
-                {% for category in categories %}
-                <option value="{{ category.id }}">{{ category.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-md-3">
-            <h5>
-                Filter by Tag 
-                <small><a href="#" id="clearTagFilter" class="text-muted">(clear)</a></small>
-            </h5>
-            <select id="tagFilter" class="form-select" multiple>
-                {% for tag in tags %}
-                <option value="{{ tag.id }}">{{ tag.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-md-3">
-            <h5>
-                Filter by Players 
-                <small><a href="#" id="clearPlayerFilter" class="text-muted">(clear)</a></small>
-            </h5>
-            <select id="playerFilter" class="form-select" multiple>
-                {% for player in range(1, 10) %}
-                <option value="{{ player }}">{{ player }} Players</option>
-                {% endfor %}
-                <option value="10">10+ Players</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <div>
-                <h5>Sold by</h5>
-                <select id="soldByFilter" class="form-select mb-2">
-                    <option value="">All Sellers</option>
-                    <option value="1">Spēlējam!</option>
-                    <option value="others">Merchants</option>
-                </select>
-            </div>
-            <div>
-                <h5>Sort by</h5>
-                <select id="sortFilter" class="form-select">
-                    <option value="name" data-order="asc">Name (A-Z)</option>
-                    <option value="name" data-order="desc">Name (Z-A)</option>
-                    <option value="price" data-order="asc">Price (Low to High)</option>
-                    <option value="price" data-order="desc">Price (High to Low)</option>
-                    <option value="date_added" data-order="asc">Date Added (Oldest to Newest)</option>
-                    <option value="date_added" data-order="desc" selected>Date Added (Newest to Oldest)</option>
-                    <option value="condition" data-order="asc">Condition (Low to High)</option>
-                    <option value="condition" data-order="desc">Condition (High to Low)</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    
-    <div class="row mb-2">
-        <div class="col-md-12">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search products...">
-        </div>
-    </div>
-
-    <div class="row mb-2">
-        <div class="col-md-12 d-flex justify-content-center">
-            <p id="productCount" class="text-muted text-center">Products found: <b>{{ total_count }}</b></p>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-12 d-flex justify-content-center">
-            <div id="paginationControlsTop">
-                {% include '_pagination.html' %}
-            </div>
-        </div>
-    </div>
-
-    <div id="productList" class="row">
-        {% include '_product_list.html' %}
-    </div>
-
-    <div class="row mt-3">
-        <div class="col-md-12 d-flex justify-content-center">
-            <div id="paginationControlsBottom">
-                {% include '_pagination.html' %}
-            </div>
-        </div>
-    </div>
-
+    <h1>Welcome to Our Store!</h1>
+    <p>This is a placeholder page. Check out our <a href="{{ url_for('main.shop') }}">Shop</a> for great products.</p>
 </div>
-{% endblock %}
-
-{% block scripts %}
-    <script src="{{ url_for('static', filename='js/filters.js') }}"></script>
 {% endblock %}

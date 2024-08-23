@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, session, flash, current_app, request
+from flask import Blueprint, render_template, redirect, url_for, session, flash, current_app
 from flask_login import current_user
 from ..forms import OrderForm, PhoneVerificationForm
 from ..models import Product, Order, db
@@ -124,7 +124,7 @@ def order_success(order_id):
     session.pop('cart', None)
 
     flash('Thank you for your purchase!', 'success')
-    return redirect(url_for('order.order_confirmation', order_id=order.id))
+    return redirect(url_for('order.order_details', order_id=order.id))
 
 @order.route('/payment_failed/<int:order_id>')
 def payment_failed(order_id):
@@ -136,20 +136,24 @@ def payment_failed(order_id):
     flash('Payment failed. Please try again.', 'danger')
     return redirect(url_for('order.checkout'))
 
-@order.route('/order_confirmation/<int:order_id>', methods=['GET', 'POST'])
-def order_confirmation(order_id):
+@order.route('/order_details/<int:order_id>', methods=['GET', 'POST'])
+def order_details(order_id):
+    order = Order.query.get_or_404(order_id)
+
+    if current_user.is_authenticated:
+        if current_user.id == order.user_id or current_user.user_level > 2:
+            return render_template('order_details.html', order=order)
+
     if 'order_id' in session and session['order_id'] == order_id:
-        order = Order.query.get_or_404(order_id)
-        return render_template('order_confirmation.html', order=order)
+        return render_template('order_details.html', order=order)
 
     form = PhoneVerificationForm()
-    order = Order.query.get_or_404(order_id)
 
     if form.validate_on_submit():
         if form.phone_number.data == order.customer_phone:
             session['order_id'] = order_id
-            return redirect(url_for('order.order_confirmation', order_id=order.id))
+            return redirect(url_for('order.order_details', order_id=order.id))
         else:
             flash('Incorrect phone number.', 'danger')
 
-    return render_template('phone_verification.html', form=form)
+    return render_template('order_verification.html', form=form)

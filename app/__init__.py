@@ -24,6 +24,7 @@ def create_app():
     from .routes.cart import cart as cart_blueprint
     from .routes.order import order as order_blueprint
     from .routes.chat import chat as chat_blueprint
+    from .routes.profile import profile as profile_blueprint
 
     app.register_blueprint(main_blueprint)
     app.register_blueprint(auth_blueprint)
@@ -31,6 +32,7 @@ def create_app():
     app.register_blueprint(cart_blueprint)
     app.register_blueprint(order_blueprint)
     app.register_blueprint(chat_blueprint)
+    app.register_blueprint(profile_blueprint)
 
     @app.context_processor
     def cart_totals():

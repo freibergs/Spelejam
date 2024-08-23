@@ -8,7 +8,7 @@ function loadPage(page, event = null) {
     const order = document.querySelector('#sortFilter option:checked').dataset.order || 'asc';
     const searchQuery = document.getElementById('searchInput').value;
 
-    fetch(`/?page=${page}&category=${category}&tags=${tags.join(',')}&players=${players.join(',')}&sold_by=${soldBy}&sort=${sort}&order=${order}&search=${searchQuery}`, {
+    fetch(`/shop?page=${page}&category=${category}&tags=${tags.join(',')}&players=${players.join(',')}&sold_by=${soldBy}&sort=${sort}&order=${order}&search=${searchQuery}`, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
         }

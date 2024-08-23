@@ -21,6 +21,7 @@
                     </a>
                 </div>
                 <span>Welcome, {{ current_user.username }}</span>
+                <a href="{{ url_for('profile.user_profile') }}" class="btn btn-info ms-2">Profile</a>
                 <a href="{{ url_for('product.add_product') }}" class="btn btn-success ms-2">Add Product</a>
                 <a href="{{ url_for('auth.logout') }}" class="btn btn-danger ms-2">Logout</a>
             {% else %}
