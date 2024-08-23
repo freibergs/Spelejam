@@ -12,7 +12,7 @@
             <select id="categoryFilter" class="form-select">
                 <option value="">All Categories</option>
                 {% for category in categories %}
-                <option value="{{ category.id }}">{{ category.name }}</option>
+                <option value="{{ category.url_slug }}" {% if request.args.get('category') == category.url_slug %}selected{% endif %}>{{ category.name }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -23,7 +23,7 @@
             </h5>
             <select id="tagFilter" class="form-select" multiple>
                 {% for tag in tags %}
-                <option value="{{ tag.id }}">{{ tag.name }}</option>
+                <option value="{{ tag.url_slug }}" {% if request.args.get('tags') and tag.url_slug in request.args.get('tags').split(',') %}selected{% endif %}>{{ tag.name }}</option>
                 {% endfor %}
             </select>
         </div>

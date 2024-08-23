@@ -8,8 +8,8 @@ main = Blueprint('main', __name__)
 @main.route('/shop')
 def shop():
     page = request.args.get('page', 1, type=int)
-    category_id = request.args.get('category', None, type=int)
-    tags = request.args.get('tags', None)
+    category_slug = request.args.get('category', None, type=str)
+    tag_slugs = request.args.get('tags', None)
     players = request.args.get('players', None)
     sort_by = request.args.get('sort', 'date_added')
     order = request.args.get('order', 'desc')
@@ -18,12 +18,14 @@ def shop():
 
     query = Product.query.options(joinedload(Product.category), joinedload(Product.tags)).filter(Product.stock > 0)
 
-    if category_id:
-        query = query.filter_by(category_id=category_id)
+    if category_slug:
+        category = Category.query.filter_by(url_slug=category_slug).first_or_404()
+        query = query.filter_by(category_id=category.id)
 
-    if tags:
-        tag_ids = tags.split(',')
-        query = query.filter(Product.tags.any(Tag.id.in_(tag_ids)))
+    if tag_slugs:
+        tag_names = tag_slugs.split(',')
+        tags = Tag.query.filter(Tag.url_slug.in_(tag_names)).all()
+        query = query.filter(Product.tags.any(Tag.id.in_([tag.id for tag in tags])))
 
     if players:
         player_counts = players.split(',')
@@ -65,5 +67,7 @@ def shop():
 
 @main.route('/')
 def index():
-    return render_template('pages/index/index_main.html')
+    latest_products = Product.query.order_by(Product.date_added.desc()).limit(10).all()
+    quality_products = Product.query.order_by(Product.condition.desc()).limit(10).all()
+    return render_template('pages/index/index_main.html', latest_products=latest_products, quality_products=quality_products)
 

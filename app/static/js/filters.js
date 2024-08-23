@@ -1,3 +1,61 @@
+//Parsing the params
+
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Set category filter
+    const category = urlParams.get('category');
+    if (category) {
+        const categoryFilter = document.getElementById('categoryFilter');
+        categoryFilter.value = category;
+    }
+
+    // Set tag filters
+    const tags = urlParams.get('tags');
+    if (tags) {
+        const tagFilter = document.getElementById('tagFilter');
+        const tagValues = tags.split(',');
+        Array.from(tagFilter.options).forEach(option => {
+            if (tagValues.includes(option.value)) {
+                option.selected = true;
+            }
+        });
+    }
+
+    // Set player filters
+    const players = urlParams.get('players');
+    if (players) {
+        const playerFilter = document.getElementById('playerFilter');
+        const playerValues = players.split(',');
+        Array.from(playerFilter.options).forEach(option => {
+            if (playerValues.includes(option.value)) {
+                option.selected = true;
+            }
+        });
+    }
+
+    // Set sold by filter
+    const soldBy = urlParams.get('sold_by');
+    if (soldBy) {
+        const soldByFilter = document.getElementById('soldByFilter');
+        soldByFilter.value = soldBy;
+    }
+
+    // Set sort filter
+    const sort = urlParams.get('sort');
+    if (sort) {
+        const sortFilter = document.getElementById('sortFilter');
+        sortFilter.value = sort;
+    }
+
+    // Set search query
+    const searchQuery = urlParams.get('search');
+    if (searchQuery) {
+        const searchInput = document.getElementById('searchInput');
+        searchInput.value = searchQuery;
+    }
+});
+
 // AJAX Pagination and filters
 function loadPage(page, event = null) {
     const category = document.getElementById('categoryFilter').value;
