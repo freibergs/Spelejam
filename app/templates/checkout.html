@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Checkout</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Your Details</h2>
+                <div class="mb-3">
+                    {{ form.customer_name.label(class="form-label") }}
+                    {{ form.customer_name(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.customer_email.label(class="form-label") }}
+                    {{ form.customer_email(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.customer_phone.label(class="form-label") }}
+                    {{ form.customer_phone(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.shipping_method.label(class="form-label") }}
+                    {% for subfield in form.shipping_method %}
+                        <div class="form-check">
+                            {{ subfield(class="form-check-input", checked=(subfield.data == 'omniva')) }}
+                            {{ subfield.label(class="form-check-label") }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="mb-3" id="omniva_pickup_point_div">
+                    {{ form.omniva_pickup_point.label(class="form-label") }}
+                    {{ form.omniva_pickup_point(class="form-select") }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h2>Order Summary</h2>
+                <ul class="list-group mb-3">
+                    {% for item in products %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ item.name }} ({{ item.quantity }}x)
+                        <span>€{{ "%.2f"|format(item.total) }}</span>
+                    </li>
+                    {% endfor %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <strong>Shipping</strong>
+                        <span id="shipping-cost">€{{ "%.2f"|format(shipping_cost) }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <strong>Total</strong>
+                        <span id="total-price">€{{ "%.2f"|format(total_price) }}</span>
+                    </li>
+                </ul>
+                <button type="submit" class="btn btn-primary">Place Order</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        window.orderData = {
+            productTotal: {{ total_price|tojson }},
+            omnivaCost: {{ shipping_cost|tojson }}
+        };
+    </script>
+    <script src="{{ url_for('static', filename='js/checkout.js') }}"></script>
+{% endblock %}

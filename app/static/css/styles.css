@@ -1,0 +1,36 @@
+/* Ensure the page takes at least the full height of the viewport */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Make the main content area grow to take up remaining space */
+.container.my-4 {
+    flex: 1;
+}
+
+/* Footer styles */
+footer {
+    flex-shrink: 0; /* Prevents footer from shrinking */
+}
+
+.image-preview {
+    display: inline-block;
+    margin: 10px;
+    position: relative;
+}
+.image-preview img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.cke_notification_warning {
+    display: none;
+}

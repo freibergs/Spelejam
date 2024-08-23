@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Add Product{% endblock %}
+
+{% block head %}
+    <script src="https://cdn.ckeditor.com/4.22.0/standard/ckeditor.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tagify/4.0.3/jQuery.tagify.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tagify/4.0.3/tagify.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Add New Product</h1>
+    <form action="{{ url_for('product.add_product') }}" method="POST" enctype="multipart/form-data">    
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3 d-flex align-items-center">
+            <div class="flex-grow-1">
+                {{ form.bgg_url.label(class="form-label") }}
+                {{ form.bgg_url(class="form-control") }}
+                <small class="form-text text-muted">
+                    Enter the <a href="https://boardgamegeek.com">BoardGameGeek</a> URL and have the name, description, and player count autofilled!
+                </small>
+            </div>
+            <div class="ms-3">
+                <button type="button" id="autofillBtn" class="btn btn-info" style="height: 100%;">Autofill</button>
+            </div>
+        </div>
+        <div class="mb-3">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.description.label(class="form-label") }}
+            {{ form.description(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.price.label(class="form-label") }}
+            {{ form.price(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.players.label(class="form-label") }}
+            {{ form.players(class="form-control") }}
+            <small class="form-text text-muted">Select all that apply.</small>
+        </div>
+        <div class="mb-3">
+            {{ form.condition.label(class="form-label") }}
+            {{ form.condition(class="form-control") }}
+            <div id="slider-range"></div>
+        </div>
+        <div class="mb-3">
+            {{ form.missing_parts.label(class="form-label") }}
+            {{ form.missing_parts(class="form-control") }}
+            <small class="form-text text-muted">Please note down <b>everything</b> that is missing.</small>
+        </div>
+        <div class="mb-3">
+            {{ form.category.label(class="form-label") }}
+            {{ form.category(class="form-select") }}
+        </div>
+        <div class="mb-3">
+            {{ form.tags.label(class="form-label") }}
+            {{ form.tags(class="form-control") }}
+            <small class="form-text text-muted">Tip: Type to search!</small>
+        </div>
+        <div class="mb-3">
+            {{ form.main_image.label(class="form-label") }}
+            {{ form.main_image(class="form-control", id="mainImageInput") }}
+            <div id="mainImagePreview" class="image-preview"></div>
+        </div>
+        <div class="mb-3">
+            {{ form.images.label(class="form-label") }}
+            {{ form.images(class="form-control", id="additionalImagesInput", multiple=True) }}
+            <div id="imagePreviewContainer" class="image-preview"></div>
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Back to Product List</a>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const whitelist_tags = [{% for tag in tags %}'{{ tag.name }}',{% endfor %}];
+        const autofill_url = "{{ url_for('product.autofill_bgg_info') }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/imagePreview.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/productForm.js') }}"></script>
+{% endblock %}

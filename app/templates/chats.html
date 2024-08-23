@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}My Chats{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>My Chats</h1>
+    {% if chats|length > 0 %}
+    <ul class="list-group">
+        {% for chat in chats %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('chat.chat_detail', chat_id=chat.id) }}">
+                {% set other_participant = chat.participants | selectattr('id', 'ne', current_user.id) | list | first %}
+                {% if other_participant.id == chat.product.owner_id %}
+                    Selling "{{ chat.product.name }}" to {{ other_participant.username }}
+                {% else %}
+                    Buying "{{ chat.product.name }}" from {{ other_participant.username }}
+                {% endif %}
+            </a>
+            {% set unread_messages = chat.messages|selectattr('is_read', 'equalto', False)|selectattr('sender_id', 'ne', current_user.id)|list|length %}
+            {% if unread_messages > 0 %}
+            <span class="badge bg-primary rounded-pill">
+                {{ unread_messages }}
+            </span>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>You have no active chats.</p>
+    {% endif %}
+</div>
+{% endblock %}

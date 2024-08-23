@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if chat.product.owner_id == current_user.id %}
+        Selling {{ chat.product.name }} to {{ chat.participants|rejectattr('id', 'equalto', current_user.id)|map(attribute='username')|first }}
+    {% else %}
+        Buying {{ chat.product.name }} from {{ chat.product.owner.username }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>
+        {% if chat.product.owner_id == current_user.id %}
+            Selling 
+        {% else %}
+            Buying 
+        {% endif %}
+        <a href="{{ url_for('product.product_detail', product_id=chat.product.id, slug=chat.product.slug) }}" class="text-decoration-none">"{{ chat.product.name }}"</a> 
+        {% if chat.product.owner_id == current_user.id %}
+            to {{ chat.participants|rejectattr('id', 'equalto', current_user.id)|map(attribute='username')|first }}
+        {% else %}
+            from {{ chat.product.owner.username }}
+        {% endif %}
+    </h1>
+    
+    <div class="chat-box mb-4">
+        {% for message in messages %}
+        <div class="message {{ 'sent' if message.sender_id == current_user.id else 'received' }} mb-2">
+            <p><strong>{{ message.sender.username }}:</strong> {{ message.content }}</p>
+            <small class="text-muted">{{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+        </div>
+        {% endfor %}
+    </div>
+
+    <form method="POST">
+        <div class="mb-3">
+            <textarea name="content" class="form-control" placeholder="Type your message..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+</div>
+{% endblock %}

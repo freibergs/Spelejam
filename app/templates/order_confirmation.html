@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Thank you for your order, {{ order.customer_name }}!</h1>
+    <p>Your order ID is: <strong>{{ order.id }}</strong></p>
+    <p>Total Amount: <strong>€{{ "%.2f"|format(order.total_price) }}</strong></p>
+    
+    <h2>Order Details</h2>
+    <ul class="list-group">
+        {% for item in order.products | fromjson %}
+        <li class="list-group-item">
+            {{ item.quantity }} x {{ item.name }} - €{{ "%.2f"|format(item.total) }}
+        </li>
+        {% endfor %}
+    </ul>
+    
+    <h3>Delivery to Omniva Pickup Point:</h3>
+    <p>{{ order.omniva_pickup_point }}</p>
+    
+    <p>We will notify you via email at <strong>{{ order.customer_email }}</strong> once your order is shipped.</p>
+</div>
+{% endblock %}
