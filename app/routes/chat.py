@@ -9,7 +9,7 @@ chat = Blueprint('chat', __name__)
 @login_required
 def chats():
     chats = Chat.query.filter(Chat.participants.any(id=current_user.id)).filter(Chat.messages.any()).all()
-    return render_template('chats/chats.html', chats=chats)
+    return render_template('chat/chats.html', chats=chats)
 
 @chat.route('/chat/<int:chat_id>', methods=['GET', 'POST'])
 @login_required
@@ -43,7 +43,7 @@ def chat_detail(chat_id):
 
     messages = Message.query.filter_by(chat_id=chat.id).order_by(Message.timestamp.asc()).all()
 
-    return render_template('chats/chat_detail.html', chat=chat, messages=messages, product=chat.product)
+    return render_template('chat/chat_detail.html', chat=chat, messages=messages, product=chat.product)
 
 @chat.route('/start_chat/<int:product_id>/<int:user_id>', methods=['GET', 'POST'])
 @login_required

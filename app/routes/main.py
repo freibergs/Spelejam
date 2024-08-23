@@ -67,7 +67,7 @@ def shop():
 
 @main.route('/')
 def index():
-    latest_products = Product.query.order_by(Product.date_added.desc()).limit(10).all()
-    quality_products = Product.query.order_by(Product.condition.desc()).limit(10).all()
+    latest_products = Product.query.filter(Product.stock > 0).order_by(Product.date_added.desc()).limit(10).all()
+    quality_products = Product.query.filter(Product.stock > 0).order_by(Product.condition.desc()).limit(10).all()
     return render_template('pages/index/index_main.html', latest_products=latest_products, quality_products=quality_products)
 
