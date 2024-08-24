@@ -3,11 +3,12 @@
 {% block title %}{{ product.name }} - Product Details{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-2">
     <div class="row">
-        <div class="col-md-6">
+        <!-- Product Gallery -->
+        <div class="col-lg-6 mb-4">
             <div id="product-gallery" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
+                <div class="carousel-inner border rounded overflow-hidden">
                     {% if product.main_image %}
                         <div class="carousel-item active">
                             <img src="{{ url_for('static', filename='uploads/' + product.main_image) }}" class="d-block w-100" alt="{{ product.name }}">
@@ -32,61 +33,116 @@
             </div>
         </div>
 
-        <div class="col-md-6">
-            <h1>{{ product.name }}</h1>
-            <p><strong>Price:</strong> ${{ product.price }}</p>
-            <p><strong>Condition:</strong> {{ product.condition }}/10</p>
-            <p><strong>Category:</strong> {{ product.category.name }}</p>
-            <p><strong>Number of Players:</strong> {{ product.players.replace(',', ', ') }}</p>
-            <p><strong>Missing Parts:</strong> {{ product.missing_parts }}</p>
-            <p><strong>Tags:</strong>
-                {% for tag in product.tags %}
-                <span class="badge bg-primary">{{ tag.name }}</span>
-                {% endfor %}
+        <!-- Product Information -->
+        <div class="col-lg-6">
+            <h1 class="display-4 text-primary">{{ product.name }}</h1>
+            <div class="d-flex align-items-center my-3">
+                <span class="h4 text-success me-3">EUR {{ product.price }}</span>
+                <span class="badge bg-warning text-dark">{{ product.condition }}/10 Condition</span>
+            </div>
+            <p class="lead text-muted">
+                <strong>Category:</strong> 
+                <a href="{{ url_for('main.shop', category=product.category.url_slug) }}">
+                    {{ product.category.name }}
+                </a>
             </p>
-            <p><strong>Description:</strong> {{ product.description | safe }}</p>
-            <p><strong>Stock:</strong> {{ product.stock }}</p>
+            <p><strong>Stock:</strong> <span class="badge bg-info">{{ product.stock }} available</span></p>
 
-            <hr>
-            {% if product.owner.id != current_user.id %}
-                {% if product.owner.id == 1 %}
-                    <form action="{{ url_for('cart.add_to_cart', product_id=product.id) }}" method="post">
-                        <button type="submit" class="btn btn-primary">Add to Cart</button>
-                    </form>
+            <div class="my-4">
+                {% if product.owner.id != current_user.id %}
+                    {% if product.owner.id == 1 %}
+                        <form action="{{ url_for('cart.add_to_cart', product_id=product.id) }}" method="post" class="d-inline-block">
+                            <button type="submit" class="btn btn-lg btn-success shadow-sm">Add to Cart <i class="bi bi-cart-plus"></i></button>
+                        </form>
+                    {% else %}
+                        <div class="seller-info p-3 bg-light rounded">
+                            <h5 class="text-secondary">Seller Information</h5>
+                            <p><strong>Seller:</strong> {{ product.owner.username }}</p>
+                            <p><strong>Location:</strong> 
+                                {% if product.owner.location %}
+                                    {{ product.owner.location }}
+                                {% else %}
+                                    Not specified
+                                {% endif %}
+                            </p>
+                            <a href="{{ url_for('chat.start_chat', product_id=product.id, user_id=product.owner_id) }}" class="btn btn-lg btn-primary shadow-sm">Contact Seller <i class="bi bi-chat-dots"></i></a>
+                        </div>
+                    {% endif %}
                 {% else %}
-                    <h5>Seller Information</h5>
-                    <p><strong>Seller:</strong> {{ product.owner.username }}</p>
-                    <p><strong>Location:</strong> 
-                        {% if product.owner.location %}
-                            {{ product.owner.location }}
-                        {% else %}
-                            Not specified
-                        {% endif %}
-                    </p>                    
-                    <a href="{{ url_for('chat.start_chat', product_id=product.id, user_id=product.owner_id) }}" class="btn btn-primary">Contact Seller</a>
+                    <p class="text-warning bg-light p-3 rounded">This is your product! You can edit it below if needed.</p>
                 {% endif %}
-            {% else %}
-                <p class="text-warning">This is your product! Feel free to edit it if you want!</p>
-            {% endif %}
+            </div>
 
             <!-- Edit and Delete buttons -->
             {% if current_user.is_authenticated and (current_user.id == product.owner.id or current_user.user_level > 2) %}
-            <hr>
-            <form action="{{ url_for('product.edit_product', product_id=product.id) }}" method="GET" style="display:inline;">
-                <input type="hidden" name="next" value="{{ request.url }}">
-                <button type="submit" class="btn btn-warning">Edit</button>
-            </form>
-            <form action="{{ url_for('product.delete_product', product_id=product.id) }}" method="POST" style="display:inline;">
-                <input type="hidden" name="next" value="{{ url_for('main.shop') }}">
-                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
-            </form>
+            <div class="mt-4 d-flex justify-content-start gap-2">
+                <form action="{{ url_for('product.edit_product', product_id=product.id) }}" method="GET" style="display:inline;">
+                    <input type="hidden" name="next" value="{{ request.url }}">
+                    <button type="submit" class="btn btn-warning">Edit <i class="bi bi-pencil-square"></i></button>
+                </form>
+                <form action="{{ url_for('product.delete_product', product_id=product.id) }}" method="POST" style="display:inline;">
+                    <input type="hidden" name="next" value="{{ url_for('main.shop') }}">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?');">Delete <i class="bi bi-trash"></i></button>
+                </form>
+            </div>
             {% endif %}
         </div>
     </div>
+
+    <!-- Tabs for Description and Additional Information -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <ul class="nav nav-tabs" id="productTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Description</button>
+                </li>
+                {% if product.players or product.missing_parts or product.tags|length > 0 or product.bgg_url %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="additional-info-tab" data-bs-toggle="tab" data-bs-target="#additional-info" type="button" role="tab" aria-controls="additional-info" aria-selected="false">Additional Information</button>
+                </li>
+                {% endif %}
+            </ul>
+            <div class="tab-content p-3 border border-top-0 rounded-bottom" id="productTabContent">
+                <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                    <p class="text-muted">{{ product.description | safe }}</p>
+                </div>
+                {% if product.players or product.missing_parts or product.tags|length > 0 or product.bgg_url %}
+                <div class="tab-pane fade" id="additional-info" role="tabpanel" aria-labelledby="additional-info-tab">
+                    {% if product.players %}
+                    <p><strong>Number of Players:</strong> {{ product.players.replace(',', ', ') }}</p>
+                    {% endif %}
+                    {% if product.missing_parts %}
+                    <p><strong>Missing Parts:</strong> {{ product.missing_parts }}</p>
+                    {% endif %}
+                    {% if product.tags|length > 0 %}
+                    <p><strong>Tags:</strong>
+                        {% for tag in product.tags %}
+                        <a href="{{ url_for('main.shop', tags=tag.url_slug) }}" class="badge bg-primary me-1">{{ tag.name }}</a>
+                        {% endfor %}
+                    </p>
+                    {% endif %}
+                    {% if product.bgg_url %}
+                    <p><strong>BoardGameGeek URL:</strong> <a href="{{ product.bgg_url }}" target="_blank">{{ product.bgg_url }}</a></p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% include 'product/related_products.html' %}
 </div>
 {% endblock %}
 
 {% block scripts %}
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+    <script>
+        // Ensure carousel controls have visible icons
+        document.querySelectorAll('.carousel-control-prev-icon, .carousel-control-next-icon').forEach(function(icon) {
+            icon.style.backgroundColor = '#000';
+            icon.style.borderRadius = '50%';
+            icon.style.width = '30px';
+            icon.style.height = '30px';
+        });
+    </script>
 {% endblock %}

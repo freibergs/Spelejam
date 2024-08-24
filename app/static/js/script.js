@@ -83,7 +83,7 @@
             spaceBetween: 20,
           }
         },
-      });      
+      });
 
       var swiper = new Swiper(".quality-products-swiper", {
         slidesPerView: 5,
@@ -103,6 +103,25 @@
           }
         },
       }); 
+
+      var swiper = new Swiper(".related-products-swiper", {
+        slidesPerView: 5,
+        spaceBetween: 10,
+        pagination: {
+          el: "#related-products .swiper-pagination",
+          clickable: true,
+        },
+        breakpoints: {
+          0: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          980: {
+            slidesPerView: 5,
+            spaceBetween: 20,
+          }
+        },
+      });   
 
       var swiper = new Swiper(".testimonial-swiper", {
         loop: true,

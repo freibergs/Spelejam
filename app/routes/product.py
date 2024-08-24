@@ -65,14 +65,58 @@ def add_product():
 
     return render_template('product/add_product.html', form=form, tags=Tag.query.all())
 
+from sqlalchemy import func, and_
+
 @product.route('/product/<slug>-<int:product_id>')
 def product_detail(slug, product_id):
     product = Product.query.get_or_404(product_id)
 
     if product.slug != slug:
         return redirect(url_for('product.product_detail', slug=product.slug, product_id=product.id))
+    
+    max_related_products = 10
 
-    return render_template('product/product.html', product=product)
+    related_products_query = db.session.query(Product).filter(
+        Product.id != product.id,
+        Product.stock > 0,
+        Product.category_id == product.category_id
+    ).outerjoin(Product.tags)
+
+    if product.tags:
+        related_products_query = related_products_query.filter(
+            Tag.id.in_([tag.id for tag in product.tags])
+        ).group_by(Product.id).order_by(
+            func.count(Tag.id).desc(),
+            Product.date_added.desc()
+        )
+
+    related_products = related_products_query.limit(max_related_products).all()
+    related_count = len(related_products)
+
+    if related_count < max_related_products:
+        additional_products_query = db.session.query(Product).filter(
+            Product.id != product.id,
+            Product.stock > 0,
+            Product.category_id == product.category_id
+        ).order_by(Product.date_added.desc())
+
+        additional_products = additional_products_query.limit(max_related_products - related_count).all()
+        related_products.extend(additional_products)
+        related_count = len(related_products)
+
+    if related_count < max_related_products and product.tags:
+        single_tag_products_query = db.session.query(Product).filter(
+            Product.id != product.id,
+            Product.stock > 0,
+            Product.tags.any(Tag.id.in_([tag.id for tag in product.tags]))
+        ).order_by(Product.date_added.desc())
+
+        single_tag_products = single_tag_products_query.limit(max_related_products - related_count).all()
+        related_products.extend(single_tag_products)
+
+    related_products = list({prod.id: prod for prod in related_products}.values())
+
+    return render_template('product/product.html', product=product, related_products=related_products)
 
 @product.route('/edit_product/<int:product_id>', methods=['GET', 'POST'])
 @login_required
