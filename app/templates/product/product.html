@@ -9,14 +9,16 @@
             <div id="product-gallery" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     {% if product.main_image %}
-                    <div class="carousel-item active">
-                        <img src="{{ url_for('static', filename='uploads/' + product.main_image) }}" class="d-block w-100" alt="{{ product.name }}">
-                    </div>
+                        <div class="carousel-item active">
+                            <img src="{{ url_for('static', filename='uploads/' + product.main_image) }}" class="d-block w-100" alt="{{ product.name }}">
+                        </div>
                     {% endif %}
                     {% for image in product.images.split(',') %}
-                    <div class="carousel-item {% if not product.main_image and loop.index0 == 0 %}active{% endif %}">
-                        <img src="{{ url_for('static', filename='uploads/' + image) }}" class="d-block w-100" alt="{{ product.name }}">
-                    </div>
+                        {% if image.strip() %}
+                            <div class="carousel-item {% if not product.main_image and loop.index0 == 0 %}active{% endif %}">
+                                <img src="{{ url_for('static', filename='uploads/' + image.strip()) }}" class="d-block w-100" alt="{{ product.name }}">
+                            </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#product-gallery" data-bs-slide="prev">
@@ -64,11 +66,11 @@
                     <a href="{{ url_for('chat.start_chat', product_id=product.id, user_id=product.owner_id) }}" class="btn btn-primary">Contact Seller</a>
                 {% endif %}
             {% else %}
-                <p class="text-warning">You cannot buy or contact yourself regarding this product.</p>
+                <p class="text-warning">This is your product! Feel free to edit it if you want!</p>
             {% endif %}
 
             <!-- Edit and Delete buttons -->
-            {% if current_user.id == product.owner.id or current_user.user_level > 2 %}
+            {% if current_user.is_authenticated and (current_user.id == product.owner.id or current_user.user_level > 2) %}
             <hr>
             <form action="{{ url_for('product.edit_product', product_id=product.id) }}" method="GET" style="display:inline;">
                 <input type="hidden" name="next" value="{{ request.url }}">

@@ -32,6 +32,10 @@ def add_to_cart(product_id):
         flash('Product not found.', 'danger')
         return redirect(url_for('main.shop'))
 
+    if product.owner_id != 1:
+        flash('This product can not be added to the cart!', 'danger')
+        return redirect(url_for('main.shop'))
+
     current_quantity = cart_items.get(product_id_str, 0)
     if current_quantity + 1 > product.stock:
         flash('Cannot add more items than are available in stock.', 'warning')
