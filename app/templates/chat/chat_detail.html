@@ -16,7 +16,7 @@
         {% else %}
             Buying 
         {% endif %}
-        <a href="{{ url_for('product.product_detail', product_id=chat.product.id, slug=chat.product.slug) }}" class="text-decoration-none">"{{ chat.product.name }}"</a> 
+        <a href="{{ url_for('product.product_detail', product_id=chat.product.id, slug=chat.product.slug) }}" class="text-decoration-none text-primary">"{{ chat.product.name }}"</a> 
         {% if chat.product.owner_id == current_user.id %}
             to {{ chat.participants|rejectattr('id', 'equalto', current_user.id)|map(attribute='username')|first }}
         {% else %}
@@ -24,19 +24,20 @@
         {% endif %}
     </h1>
     
-    <div class="chat-box mb-4">
+    <div class="chat-box mb-4 p-3 border rounded" style="background-color: #f9f9f9; max-height: 400px; overflow-y: auto;">
         {% for message in messages %}
-        <div class="message {{ 'sent' if message.sender_id == current_user.id else 'received' }} mb-2">
-            <p><strong>{{ message.sender.username }}:</strong> {{ message.content }}</p>
-            <small class="text-muted">{{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+        <div class="message {{ 'text-end' if message.sender_id == current_user.id else 'text-start' }} mb-3">
+            <div class="p-2 rounded">
+                <p class="mb-1"><strong>{{ message.sender.username }}</strong></p>
+                <p class="mb-0">{{ message.content }}</p>
+                <small class="text-muted">{{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+            </div>
         </div>
         {% endfor %}
     </div>
 
-    <form method="POST">
-        <div class="mb-3">
-            <textarea name="content" class="form-control" placeholder="Type your message..." required></textarea>
-        </div>
+    <form method="POST" class="d-flex">
+        <textarea name="content" class="form-control me-2" placeholder="Type your message..." required></textarea>
         <button type="submit" class="btn btn-primary">Send</button>
     </form>
 </div>

@@ -5,16 +5,17 @@
 {% block content %}
 <div class="container">
     <h1>My Chats</h1>
+    
     {% if chats|length > 0 %}
-    <ul class="list-group">
+    <ul class="list-group list-group-flush">
         {% for chat in chats %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
-            <a href="{{ url_for('chat.chat_detail', chat_id=chat.id) }}">
+            <a href="{{ url_for('chat.chat_detail', chat_id=chat.id) }}" class="text-decoration-none text-dark">
                 {% set other_participant = chat.participants | selectattr('id', 'ne', current_user.id) | list | first %}
-                {% if other_participant.id == chat.product.owner_id %}
-                    Selling "{{ chat.product.name }}" to {{ other_participant.username }}
+                {% if chat.product.owner_id == current_user.id %}
+                    <strong>Selling "{{ chat.product.name }}" to {{ other_participant.username }}</strong>
                 {% else %}
-                    Buying "{{ chat.product.name }}" from {{ other_participant.username }}
+                    <strong>Buying "{{ chat.product.name }}" from {{ chat.product.owner.username }}</strong>
                 {% endif %}
             </a>
             {% set unread_messages = chat.messages|selectattr('is_read', 'equalto', False)|selectattr('sender_id', 'ne', current_user.id)|list|length %}
@@ -27,7 +28,10 @@
         {% endfor %}
     </ul>
     {% else %}
-    <p>You have no active chats.</p>
+    <div class="text-center">
+        <p class="text-muted">You have no active chats.</p>
+        <a href="{{ url_for('main.shop') }}" class="btn btn-primary mt-3">Start Shopping</a>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

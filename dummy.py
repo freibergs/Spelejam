@@ -4,9 +4,11 @@ from faker import Faker
 from datetime import datetime
 from slugify import slugify
 
+# Initialize the database connection and cursor
 conn = sqlite3.connect('instance/store.db')
 cursor = conn.cursor()
 
+# Initialize Faker
 fake = Faker()
 
 # Add users beforehand
@@ -28,15 +30,17 @@ conn.commit()
 cursor.execute("SELECT id FROM user")
 user_ids = [row[0] for row in cursor.fetchall()]
 
-# Define the number of products to generate
-count = 100
+# Define the number of products and blogs to generate
+product_count = 100
+blog_count = 10
 
+# Utility functions
 def add_category(name):
     cursor.execute("SELECT id FROM category WHERE name = ?", (name,))
     category = cursor.fetchone()
     if category is None:
         slug = slugify(name)
-        cursor.execute("INSERT INTO category (name, url_slug, slug) VALUES (?, ?, ?)", (name, slug, slug))
+        cursor.execute("INSERT INTO category (name, url_slug) VALUES (?, ?)", (name, slug))
         return cursor.lastrowid
     return category[0]
 
@@ -45,17 +49,16 @@ def add_tag(name):
     tag = cursor.fetchone()
     if tag is None:
         slug = slugify(name)
-        cursor.execute("INSERT INTO tag (name, url_slug, slug) VALUES (?, ?, ?)", (name, slug, slug))
+        cursor.execute("INSERT INTO tag (name, url_slug) VALUES (?, ?)", (name, slug))
         return cursor.lastrowid
     return tag[0]
 
 def generate_random_players():
-    # Generate a random number of players from 1 to 10, including 10+
     num_players = random.randint(1, 9)
     players = sorted(set(random.choices(range(1, 11), k=random.randint(1, 5))))
-    # Convert 10 to "10+" and join the players into a comma-separated string
     return ",".join(str(p) if p < 10 else "10" for p in players)
 
+# Define categories and tags
 category_names = ["Strategy", "Family", "Party", "Abstract", "Thematic"]
 tag_names = ["Easy to learn", "For experts", "Short game", "Long game", "Multiplayer"]
 
@@ -64,7 +67,8 @@ tag_ids = [add_tag(name) for name in tag_names]
 
 images = ["1.jpg", "2.jpg", "3.png", "4.png", "5.jpg"]
 
-for _ in range(count):
+# Generate random products
+for _ in range(product_count):
     name = fake.word().capitalize() + " " + fake.word().capitalize()
     slug = slugify(name)
     description = fake.sentence(nb_words=10)
@@ -79,7 +83,7 @@ for _ in range(count):
     date_added = datetime.utcnow()
     players = generate_random_players()
     bgg_url = "https://boardgamegeek.com/boardgame/413663/pizza-chef-the-next-generation"
-    stock = 1  # Set stock to 1 for every game
+    stock = 1
 
     cursor.execute("""
         INSERT INTO product (name, slug, description, price, condition, missing_parts, main_image, images, bgg_url, owner_id, category_id, date_added, players, stock)
@@ -91,7 +95,23 @@ for _ in range(count):
     for tag_id in product_tags:
         cursor.execute("INSERT INTO product_tag (product_id, tag_id) VALUES (?, ?)", (product_id, tag_id))
 
+# Generate random blogs
+for _ in range(blog_count):
+    title = fake.sentence(nb_words=6).capitalize()
+    slug = slugify(title)
+    content = "<p>" + fake.paragraph(nb_sentences=5) + "</p>" + "<p>" + fake.paragraph(nb_sentences=5) + "</p>"
+    meta_title = title
+    meta_description = fake.sentence(nb_words=10)
+    meta_keywords = ", ".join(fake.words(nb=5))
+    cover_image = random.choice(images)
+    created_at = datetime.utcnow()
+
+    cursor.execute("""
+        INSERT INTO blog (title, url_slug, content, meta_title, meta_description, meta_keywords, cover_image, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (title, slug, content, meta_title, meta_description, meta_keywords, cover_image, created_at))
+
 conn.commit()
 conn.close()
 
-print(f"{count} random board games with categories, tags, slugs, player counts, and stock added to the database.")
+print(f"{blog_count} random blog posts with cover images added to the database.")

@@ -39,7 +39,6 @@ class Message(db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
-    slug = db.Column(db.String(150), nullable=False, unique=True)
     url_slug = db.Column(db.String(80), unique=True, nullable=False)
     parent_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True, default=0)
     parent = db.relationship('Category', remote_side=[id], backref='children')
@@ -52,13 +51,12 @@ class Category(db.Model):
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
-    slug = db.Column(db.String(150), nullable=False, unique=True)
     url_slug = db.Column(db.String(80), unique=True, nullable=False)
 
     def __init__(self, *args, **kwargs):
         super(Tag, self).__init__(*args, **kwargs)
-        if not self.slug:
-            self.slug = slugify(self.name)
+        if not self.url_slug:
+            self.url_slug = slugify(self.name)
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -105,3 +103,20 @@ class Order(db.Model):
     omniva_tracking_code = db.Column(db.String(120), nullable=True, default='')
     status = db.Column(db.String(20), nullable=False, default='pending')
     order_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+class Blog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), nullable=False)
+    url_slug = db.Column(db.String(150), unique=True, nullable=False)
+    content = db.Column(db.Text, nullable=False)  # This will store the HTML content of the blog post
+    meta_title = db.Column(db.String(150), nullable=True)  # SEO Title
+    meta_description = db.Column(db.String(255), nullable=True)  # SEO Description
+    meta_keywords = db.Column(db.String(255), nullable=True)  # SEO Keywords
+    cover_image = db.Column(db.String(120), nullable=True)  # Cover image for the blog
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __init__(self, *args, **kwargs):
+        super(Blog, self).__init__(*args, **kwargs)
+        if not self.url_slug:
+            self.url_slug = slugify(self.title)
+

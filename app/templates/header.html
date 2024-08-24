@@ -20,24 +20,30 @@
                     <ul id="navbar" class="navbar-nav text-uppercase justify-content-end align-items-center flex-grow-1 pe-3">
                         <!-- Desktop Menu -->
                         <li class="nav-item d-none d-lg-block">
-                            <a class="nav-link me-4 active" href="{{ url_for('main.index') }}">Home</a>
+                            <a class="nav-link me-4 {% if request.endpoint == 'main.index' %}active{% endif %}" href="{{ url_for('main.index') }}">Home</a>
                         </li>
                         <li class="nav-item d-none d-lg-block">
-                            <a class="nav-link me-4" href="{{ url_for('main.shop') }}">Shop</a>
+                            <a class="nav-link me-4 {% if request.endpoint == 'blog.all_blogs' %}active{% endif %}" href="{{ url_for('blog.all_blogs') }}">Blog</a>
+                        </li>
+                        <li class="nav-item d-none d-lg-block">
+                            <a class="nav-link me-4 {% if request.endpoint == 'main.shop' %}active{% endif %}" href="{{ url_for('main.shop') }}">Shop</a>
                         </li>
                         {% if current_user.is_authenticated %}
                         <li class="nav-item d-none d-lg-block">
-                            <a class="nav-link me-4" href="{{ url_for('profile.user_profile') }}">Profile</a>
+                            <a class="nav-link me-4 {% if request.endpoint == 'product.add_product' %}active{% endif %}" href="{{ url_for('product.add_product') }}">Sell</a>
+                        </li>
+                        <li class="nav-item d-none d-lg-block">
+                            <a class="nav-link me-4 {% if request.endpoint == 'profile.user_profile' %}active{% endif %}" href="{{ url_for('profile.user_profile') }}">Profile</a>
                         </li>
                         <li class="nav-item d-none d-lg-block">
                             <a class="nav-link me-4" href="{{ url_for('auth.logout') }}">Log Out</a>
                         </li>
                         {% else %}
                         <li class="nav-item d-none d-lg-block">
-                            <a class="nav-link me-4" href="{{ url_for('auth.login') }}">Login</a>
+                            <a class="nav-link me-4 {% if request.endpoint == 'auth.login' %}active{% endif %}" href="{{ url_for('auth.login') }}">Login</a>
                         </li>
                         <li class="nav-item d-none d-lg-block">
-                            <a class="nav-link me-4" href="{{ url_for('auth.register') }}">Register</a>
+                            <a class="nav-link me-4 {% if request.endpoint == 'auth.register' %}active{% endif %}" href="{{ url_for('auth.register') }}">Register</a>
                         </li>
                         {% endif %}
 
@@ -46,11 +52,17 @@
                             <a class="nav-link me-4" href="{{ url_for('main.index') }}">Home</a>
                         </li>
                         <li class="nav-item d-lg-none">
+                            <a class="nav-link me-4" href="{{ url_for('blog.all_blogs') }}">Blog</a>
+                        </li>
+                        <li class="nav-item d-lg-none">
                             <a class="nav-link me-4" href="{{ url_for('main.shop') }}">Shop</a>
                         </li>
                         {% if current_user.is_authenticated %}
                         <li class="nav-item d-lg-none">
                             <a class="nav-link me-4" href="{{ url_for('profile.user_profile') }}">Profile</a>
+                        </li>
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link me-4" href="{{ url_for('product.add_product') }}">Sell</a>
                         </li>
                         <li class="nav-item d-lg-none">
                             <a class="nav-link me-4" href="{{ url_for('chat.chats') }}">Messages</a>
