@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request
-from ..models import Product, Category, Tag, product_tag
+from flask import Blueprint, render_template, request, flash, redirect, url_for
+from ..models import Product, Category, Tag, Blog, Subscription, Review, product_tag
 from .. import db
 from sqlalchemy.orm import joinedload
 
@@ -65,9 +65,26 @@ def shop():
     tags = Tag.query.all()
     return render_template('pages/shop.html', products=products, categories=categories, tags=tags, total_count=total_count)
 
+@main.route('/subscribe', methods=['POST'])
+def subscribe():
+    email = request.form.get('email')
+    
+    existing_subscription = Subscription.query.filter_by(email=email).first()
+    if existing_subscription:
+        flash('This email is already subscribed.', 'warning')
+    else:
+        new_subscription = Subscription(email=email)
+        db.session.add(new_subscription)
+        db.session.commit()
+        flash('Thank you for subscribing!', 'success')
+    
+    return redirect(url_for('main.index'))
+
 @main.route('/')
 def index():
     latest_products = Product.query.filter(Product.stock > 0).order_by(Product.date_added.desc()).limit(10).all()
     quality_products = Product.query.filter(Product.stock > 0).order_by(Product.condition.desc()).limit(10).all()
-    return render_template('pages/index/index_main.html', latest_products=latest_products, quality_products=quality_products)
+    latest_blogs = Blog.query.order_by(Blog.created_at.desc()).limit(3).all()
+    reviews = Review.query.order_by(Review.date_added.desc()).limit(5).all()
+    return render_template('pages/index/index_main.html', latest_products=latest_products, quality_products=quality_products, latest_blogs=latest_blogs, reviews=reviews)
 

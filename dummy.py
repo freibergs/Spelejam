@@ -30,9 +30,10 @@ conn.commit()
 cursor.execute("SELECT id FROM user")
 user_ids = [row[0] for row in cursor.fetchall()]
 
-# Define the number of products and blogs to generate
+# Define the number of products, blogs, and reviews to generate
 product_count = 100
 blog_count = 10
+review_count = 20  # Adjust this number to generate more or fewer reviews
 
 # Utility functions
 def add_category(name):
@@ -111,7 +112,19 @@ for _ in range(blog_count):
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """, (title, slug, content, meta_title, meta_description, meta_keywords, cover_image, created_at))
 
+# Generate random reviews
+for _ in range(review_count):
+    text = fake.sentence(nb_words=20)
+    name = fake.name()
+    score = random.randint(1, 10)
+    date_added = datetime.utcnow()
+
+    cursor.execute("""
+        INSERT INTO review (text, name, score, date_added)
+        VALUES (?, ?, ?, ?)
+    """, (text, name, score, date_added))
+
 conn.commit()
 conn.close()
 
-print(f"{blog_count} random blog posts with cover images added to the database.")
+print(f"{product_count} random products, {blog_count} random blog posts, and {review_count} random reviews added to the database.")

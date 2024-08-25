@@ -120,3 +120,14 @@ class Blog(db.Model):
         if not self.url_slug:
             self.url_slug = slugify(self.title)
 
+class Subscription(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    date_subscribed = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+class Review(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+    name = db.Column(db.String(120), nullable=False)
+    score = db.Column(db.Integer, nullable=False)
+    date_added = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
