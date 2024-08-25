@@ -82,3 +82,11 @@ class ChangePasswordForm(FlaskForm):
     new_password = PasswordField('New Password', validators=[InputRequired(), Length(min=4, max=20)])
     confirm_new_password = PasswordField('Confirm New Password', validators=[InputRequired(), EqualTo('new_password')])
     submit = SubmitField('Change Password')
+
+class BlogForm(FlaskForm):
+    title = StringField('Title', validators=[InputRequired()])
+    content = TextAreaField('Content', validators=[InputRequired()])
+    meta_title = StringField('Meta Title')
+    meta_description = TextAreaField('Meta Description')
+    meta_keywords = StringField('Meta Keywords')
+    cover_image = FileField('Cover Image')

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Create Blog{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Create Blog Post</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.title.label(class="form-label") }}
+            {{ form.title(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.content.label(class="form-label") }}
+            {{ form.content(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.meta_title.label(class="form-label") }}
+            {{ form.meta_title(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.meta_description.label(class="form-label") }}
+            {{ form.meta_description(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.meta_keywords.label(class="form-label") }}
+            {{ form.meta_keywords(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.cover_image.label(class="form-label") }}
+            {{ form.cover_image(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Create Blog</button>
+    </form>
+</div>
+{% endblock %}

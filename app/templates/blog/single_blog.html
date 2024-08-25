@@ -19,6 +19,14 @@
     <div class="blog-content">
         {{ blog.content | safe }}
     </div>
+    {% if current_user.is_authenticated and current_user.user_level > 2 %}
+    <div class="text-end mb-4">
+        <a href="{{ url_for('blog.update_blog', blog_id=blog.id) }}" class="btn btn-warning">Edit</a>
+        <form action="{{ url_for('blog.delete_blog', blog_id=blog.id) }}" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this blog post?');">Delete</button>
+        </form>
+    </div>
+    {% endif %}
     <div class="mt-4">
         <a href="{{ url_for('blog.all_blogs') }}" class="btn btn-secondary">Back to Blog</a>
     </div>
