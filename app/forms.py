@@ -3,8 +3,7 @@ from wtforms import StringField, PasswordField, SubmitField, EmailField, TelFiel
 from wtforms.validators import InputRequired, Length, ValidationError, Email, EqualTo, NumberRange
 from wtforms.widgets import HiddenInput
 from .models import User, Category
-from instance.parcelmachines import OMNIVA_LOCATIONS
-
+from .utils import get_omnivas
 
 class RegistrationForm(FlaskForm):
     username = StringField(validators=[InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
@@ -65,7 +64,7 @@ class OrderForm(FlaskForm):
     shipping_method = RadioField('Shipping Method', validators=[InputRequired()],
                                  choices=[('self_pickup', 'Self Pickup'), ('omniva', 'Omniva Pickup Point')])
     omniva_pickup_point = SelectField('Omniva Pickup Point', validators=[InputRequired()],
-                                      choices=[(location, location) for location in OMNIVA_LOCATIONS])
+                                      choices=[(location, location) for location in get_omnivas()])
     submit = SubmitField('Place Order')
 
 class PhoneVerificationForm(FlaskForm):

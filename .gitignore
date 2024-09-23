@@ -1,3 +1,5 @@
-instance/
+instance/__pycache__/
+instance/store.db
+instance/config.py
 __pycache__/
 uploads/

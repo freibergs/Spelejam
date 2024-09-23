@@ -65,7 +65,7 @@ def update_blog(blog_id):
 
         if form.cover_image.data:
             if blog_post.cover_image:
-                old_image_path = os.path.join(app.config['UPLOAD_FOLDER'], blog_post.cover_image)
+                old_image_path = os.path.join('uploads', blog_post.cover_image)
                 if os.path.exists(old_image_path):
                     os.remove(old_image_path)
 
