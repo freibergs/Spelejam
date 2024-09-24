@@ -28,7 +28,6 @@ def user_profile():
             flash('Current password is incorrect.', 'danger')
         return redirect(url_for('profile.user_profile'))
 
-    # Fetch the user's orders and posted products
     orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.order_date.desc()).all()
     products = Product.query.filter_by(owner_id=current_user.id).order_by(Product.date_added.desc()).all()
 

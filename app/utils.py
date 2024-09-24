@@ -38,6 +38,5 @@ def get_omnivas():
     with open(locations_file, 'r', encoding='utf-8') as file:
         locations_data = json.load(file)
         
-        # Izmanto .get(), lai izvairītos no KeyError, ja 'A0_Name' atslēga nav klāt
         OMNIVA_LOCATIONS = [loc['NAME'] for loc in locations_data if loc.get('A0_Name') == 'LV']
         return OMNIVA_LOCATIONS

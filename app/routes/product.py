@@ -172,7 +172,6 @@ def edit_product(product_id):
 
         flash(Markup(f'Product updated! <a href="{url_for("product.product_detail", product_id=product.id, slug=product.slug)}" class="alert-link">View Product</a>'), 'success')
 
-        # Determine where to redirect after updating
         next_page = request.form.get('next')
         if next_page:
             return redirect(next_page + '#products')

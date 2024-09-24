@@ -4,14 +4,11 @@ from faker import Faker
 from datetime import datetime
 from slugify import slugify
 
-# Initialize the database connection and cursor
 conn = sqlite3.connect('instance/store.db')
 cursor = conn.cursor()
 
-# Initialize Faker
 fake = Faker()
 
-# Add users beforehand
 users = [
     {"username": "admin", "email": fake.email(), "password": "pbkdf2:sha256:600000$N8Z79AH5Yv6g9Wyv$d8f27ef0a35510195415b9e750e3653041affb5cc48ab98c4987fa828ea21a8c", "user_level": 3},
     {"username": "user", "email": fake.email(), "password": "pbkdf2:sha256:600000$N8Z79AH5Yv6g9Wyv$d8f27ef0a35510195415b9e750e3653041affb5cc48ab98c4987fa828ea21a8c", "user_level": 2},
@@ -26,16 +23,13 @@ for user in users:
 
 conn.commit()
 
-# Get user IDs
 cursor.execute("SELECT id FROM user")
 user_ids = [row[0] for row in cursor.fetchall()]
 
-# Define the number of products, blogs, and reviews to generate
 product_count = 100
 blog_count = 10
-review_count = 20  # Adjust this number to generate more or fewer reviews
+review_count = 20
 
-# Utility functions
 def add_category(name):
     cursor.execute("SELECT id FROM category WHERE name = ?", (name,))
     category = cursor.fetchone()
@@ -59,7 +53,6 @@ def generate_random_players():
     players = sorted(set(random.choices(range(1, 11), k=random.randint(1, 5))))
     return ",".join(str(p) if p < 10 else "10" for p in players)
 
-# Define categories and tags
 category_names = ["Strategy", "Family", "Party", "Abstract", "Thematic"]
 tag_names = ["Easy to learn", "For experts", "Short game", "Long game", "Multiplayer"]
 
@@ -68,7 +61,6 @@ tag_ids = [add_tag(name) for name in tag_names]
 
 images = ["1.jpg", "2.jpg", "3.png", "4.png", "5.jpg"]
 
-# Generate random products
 for _ in range(product_count):
     name = fake.word().capitalize() + " " + fake.word().capitalize()
     slug = slugify(name)
@@ -96,7 +88,6 @@ for _ in range(product_count):
     for tag_id in product_tags:
         cursor.execute("INSERT INTO product_tag (product_id, tag_id) VALUES (?, ?)", (product_id, tag_id))
 
-# Generate random blogs
 for _ in range(blog_count):
     title = fake.sentence(nb_words=6).capitalize()
     slug = slugify(title)
@@ -112,7 +103,6 @@ for _ in range(blog_count):
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """, (title, slug, content, meta_title, meta_description, meta_keywords, cover_image, created_at))
 
-# Generate random reviews
 for _ in range(review_count):
     text = fake.sentence(nb_words=20)
     name = fake.name()

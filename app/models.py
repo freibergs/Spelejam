@@ -90,10 +90,10 @@ product_tag = db.Table('product_tag',
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    products = db.Column(db.Text, nullable=False)  # Store products as a JSON string
+    products = db.Column(db.Text, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
     shipping_cost = db.Column(db.Float, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # Nullable for guest orders
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     user = db.relationship('User', backref=db.backref('orders', lazy=True))
     customer_name = db.Column(db.String(120), nullable=False)
     customer_email = db.Column(db.String(120), nullable=False)
@@ -108,11 +108,11 @@ class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
     url_slug = db.Column(db.String(150), unique=True, nullable=False)
-    content = db.Column(db.Text, nullable=False)  # This will store the HTML content of the blog post
-    meta_title = db.Column(db.String(150), nullable=True)  # SEO Title
-    meta_description = db.Column(db.String(255), nullable=True)  # SEO Description
-    meta_keywords = db.Column(db.String(255), nullable=True)  # SEO Keywords
-    cover_image = db.Column(db.String(120), nullable=True)  # Cover image for the blog
+    content = db.Column(db.Text, nullable=False)
+    meta_title = db.Column(db.String(150), nullable=True)
+    meta_description = db.Column(db.String(255), nullable=True)
+    meta_keywords = db.Column(db.String(255), nullable=True)
+    cover_image = db.Column(db.String(120), nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __init__(self, *args, **kwargs):

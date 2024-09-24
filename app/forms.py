@@ -28,7 +28,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class AddProductForm(FlaskForm):
-    bgg_url = StringField('BoardGameGeek URL', validators=[Length(max=255)])  # Optional now
+    bgg_url = StringField('BoardGameGeek URL', validators=[Length(max=255)])
     name = StringField('Name', validators=[InputRequired(), Length(max=120)])
     description = TextAreaField('Description', validators=[InputRequired()])
     price = DecimalField('Price', validators=[InputRequired(), NumberRange(min=0)], places=2)
@@ -38,7 +38,7 @@ class AddProductForm(FlaskForm):
     category = SelectField('Category', validators=[InputRequired()], coerce=int)
     tags = StringField('Tags', validators=[Length(max=255)])
     main_image = FileField('Main Image', validators=[InputRequired()])
-    images = FileField('Additional Images', render_kw={"multiple": True})  # For handling multiple files
+    images = FileField('Additional Images', render_kw={"multiple": True})
     submit = SubmitField('Add Product')
 
     def __init__(self, *args, **kwargs):
@@ -48,14 +48,13 @@ class AddProductForm(FlaskForm):
 class EditProductForm(AddProductForm):
     def __init__(self, product=None, *args, **kwargs):
         super(EditProductForm, self).__init__(*args, **kwargs)
-        self.name.render_kw = {'readonly': True}  # Disable the name field
-        self.main_image.validators = []  # Remove the 'InputRequired' validator
-        self.main_image.render_kw = {'required': False}  # Ensure the 'required' attribute is removed in HTML
-        self.submit.label.text = 'Edit Product'   # Change the submit button label
+        self.name.render_kw = {'readonly': True}
+        self.main_image.validators = []
+        self.main_image.render_kw = {'required': False}
+        self.submit.label.text = 'Edit Product'
         
-        # Only make bgg_url editable if it's not already set
         if product and product.bgg_url:
-            self.bgg_url.render_kw = {'readonly': True}  # Disable editing of bgg_url if it's already set
+            self.bgg_url.render_kw = {'readonly': True}
 
 class OrderForm(FlaskForm):
     customer_name = StringField('Name', validators=[InputRequired(), Length(max=120)])
