@@ -33,6 +33,7 @@ This is a fully functional store/marketplace with the following features:
 
 ## Additional Information
 
+- Currently using [MIT Licence](LICENSE.md).
 - Comprehensive documentation is currently under development and will be available soon.
 - For any immediate questions or issues, please open an issue in the project repository.
 
