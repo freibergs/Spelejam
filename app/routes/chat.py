@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_required
 from ..models import Chat, Message, User, Product, db
-from datetime import datetime
 
 chat = Blueprint('chat', __name__)
 
@@ -17,7 +16,7 @@ def chat_detail(chat_id):
     chat = Chat.query.get_or_404(chat_id)
 
     if current_user not in chat.participants:
-        flash("You are not authorized to view this chat.", "danger")
+        flash("You are not authorized to view this chat.", "danger")   
         return redirect(url_for('main.index'))
 
     if request.method == 'POST':
